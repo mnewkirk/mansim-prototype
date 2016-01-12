@@ -27,6 +27,10 @@ public class Attribute {
     value = Math.min(100, value + points);
   }
 
+  public static AttributeName getAttributeName(String name) {
+    return AttributeName.valueOf(name.toLowerCase());
+  }
+
   @Override
   public String toString() {
     return name + ": " + value;

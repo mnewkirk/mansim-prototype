@@ -56,7 +56,7 @@ public class Worker {
 
   public int getAttributeValue(String attributeName) {
     Attribute attribute
-      = attributes.getOrDefault(attributeName, null);
+      = attributes.getOrDefault(Attribute.getAttributeName(attributeName), null);
     if (attribute == null) {
       return 0;
     }

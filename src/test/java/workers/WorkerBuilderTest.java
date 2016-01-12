@@ -3,6 +3,7 @@ package workers;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import attributes.Attribute;
 import attributes.Time;
 import attributes.Trust;
 
