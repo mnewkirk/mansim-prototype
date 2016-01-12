@@ -2,9 +2,7 @@ package actions;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Matt Newkirk 1/12/2016
@@ -15,11 +13,13 @@ public class Choices {
 
   public Choices(List<Action> actions) {
     this.actions = actions;
+    choiceSelected = null;
   }
 
   public Choices(Action... givenActions) {
     actions = new ArrayList<>();
     Collections.addAll(actions, givenActions);
+    choiceSelected = null;
   }
 
   public int getNumChoices() {
@@ -36,5 +36,21 @@ public class Choices {
 
   public Action getChoiceSelected() {
     return choiceSelected;
+  }
+  @Override
+  public String toString() {
+    if (getNumChoices() == 0) {
+      return "No choices.";
+    }
+    StringBuilder sb = new StringBuilder();
+    int i = 1;
+    for (Action action : actions) {
+      if (getChoiceSelected() != null && action.equals(getChoiceSelected())) {
+        sb.append("Selected Action: ");
+      }
+      sb.append(String.format("(#%d) ", i++));
+      sb.append(action);
+    }
+    return sb.toString();
   }
 }
