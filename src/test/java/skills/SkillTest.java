@@ -10,6 +10,8 @@ import actions.proto.skills.TrainOtherInSkill;
  * @author Matt Newkirk 1/7/2016
  */
 public class SkillTest {
+
+
   @Test
   public void testSkillTrainingSelf() {
     Skill skill = new Skill("Underwater Basket Weaving", 10);

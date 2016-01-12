@@ -15,6 +15,18 @@ public class Attribute {
     this.value = value;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public int getValue() {
+    return value;
+  }
+
+  public void increaseAttribute(int points) {
+    value = Math.min(100, value + points);
+  }
+
   @Override
   public String toString() {
     return name + ": " + value;
