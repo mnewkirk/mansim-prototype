@@ -1,7 +1,11 @@
 package workers;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import actions.Action;
+import actions.ChoiceHistory;
+import actions.Choices;
 import attributes.Attribute;
 import skills.Skill;
 
@@ -12,6 +16,11 @@ public class Worker {
   private String name;
   private HashMap<String, Skill> skills;
   private HashMap<Attribute.AttributeName, Attribute> attributes;
+  private ChoiceHistory choiceHistory;
+
+  public Worker() {
+    choiceHistory = new ChoiceHistory();
+  }
 
   public String getName() {
     return name;
@@ -63,6 +72,25 @@ public class Worker {
     attribute.increaseAttribute(points);
   }
 
+  public ChoiceHistory getChoiceHistory() {
+    return choiceHistory;
+  }
+
+  public void addChoiceToHistory(Choices choices) {
+    choiceHistory.addChoiceMade(choices);
+  }
+
+  public void takeAction(Choices choices) {
+    Action actionChosen = choices.getChoiceSelected();
+    Map<Attribute.AttributeName, Integer> attributes =
+      actionChosen.getAttributesActedUpon();
+
+    for (Attribute.AttributeName attributeName : attributes.keySet()) {
+      improveAttribute(attributeName.name(), attributes.get(attributeName));
+    }
+    addChoiceToHistory(choices);
+  }
+
   @Override
   public String toString() {
     StringBuilder stringBuilder = new StringBuilder(name);
@@ -74,6 +102,8 @@ public class Worker {
           attributes.get(attributeName).getValue()));
     }
     stringBuilder.append("\n");
+    stringBuilder.append("Choice History:\n");
+    stringBuilder.append(choiceHistory.toString());
     return stringBuilder.toString();
   }
 }

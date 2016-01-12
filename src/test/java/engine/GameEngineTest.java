@@ -1,5 +1,6 @@
 package engine;
 
+import java.awt.*;
 import java.util.Map;
 
 import org.testng.annotations.AfterClass;
@@ -8,6 +9,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import actions.Action;
+import actions.Choices;
 import actions.proto.firing.DishonestlyShareTerminationWithTeam;
 import actions.proto.firing.FirePersonAfterWarnings;
 import actions.proto.firing.FirePersonWithoutWarning;
@@ -15,6 +17,7 @@ import actions.proto.firing.HonestlyShareTerminationWithTeam;
 import actions.proto.hiring.HireForDiversity;
 import actions.proto.hiring.HireForSameness;
 import actions.proto.projects.AllowTimeSideProjects;
+import actions.proto.projects.CheckInAtComfortableIntervals;
 import actions.proto.projects.CommunicateDesiredOutput;
 import actions.proto.projects.CommunicatePrescriptedActions;
 import actions.proto.projects.Micromanage;
@@ -36,6 +39,7 @@ public class GameEngineTest {
     new CommunicateDesiredOutput(),
     new CommunicatePrescriptedActions(),
     new Micromanage(),
+    new CheckInAtComfortableIntervals(),
     new NoTimeForSideProjects(),
     new DishonestlyShareTerminationWithTeam(),
     new FirePersonAfterWarnings(),
@@ -47,7 +51,16 @@ public class GameEngineTest {
     new OptimizeWorkOverLife(),
     new LearnSkillOnOwn(),
     new TrainOtherInSkill(), };
-
+  Choices choices[] = {
+    new Choices(new AllowTimeSideProjects(), new NoTimeForSideProjects()),
+    new Choices(new CommunicateDesiredOutput(), new CommunicatePrescriptedActions()),
+    new Choices(new Micromanage(), new CheckInAtComfortableIntervals()),
+    new Choices(new HonestlyShareTerminationWithTeam(), new DishonestlyShareTerminationWithTeam()),
+    new Choices(new FirePersonAfterWarnings(), new FirePersonWithoutWarning()),
+    new Choices(new HireForDiversity(), new HireForSameness()),
+    new Choices(new OptimizeLifeOverWork(), new OptimizeWorkOverLife()),
+    new Choices(new TrainOtherInSkill(), new LearnSkillOnOwn())
+  };
   @DataProvider
   public Object[][] attributeNames() {
     Attribute.AttributeName[] names = Attribute.AttributeName.values();
@@ -63,24 +76,27 @@ public class GameEngineTest {
     Worker initialWorker = new WorkerBuilder().build();
     System.out.println("Compare to untouched:\n" + initialWorker);
   }
-  @Test
+  @Test(enabled = false)
   public void runThroughEngine() {
-    Worker firstWorker = new WorkerBuilder().build();
+    Worker worker = new WorkerBuilder().build();
     System.out.println("All actions:");
     for (Action action : actions) {
       //System.out.println(action);
       Map<Attribute.AttributeName, Integer> attributes =
         action.getAttributesActedUpon();
       for (Attribute.AttributeName attributeName : attributes.keySet()) {
-        firstWorker.improveAttribute(attributeName.name(), attributes.get(attributeName));
+        worker.improveAttribute(attributeName.name(), attributes.get(attributeName));
       }
+      Choices choice = new Choices(action);
+      choice.setChoiceSelected(action);
+      worker.takeAction(choice);
     }
-    System.out.println(firstWorker);
+    System.out.println(worker);
   }
 
   @Test(dataProvider = "attributeNames")
   public void runForHighData(Attribute.AttributeName attributeToFilter) {
-    Worker firstWorker = new WorkerBuilder().build();
+    Worker worker = new WorkerBuilder().build();
     System.out.println("High " + attributeToFilter.name() + " actions:");
     for (Action action : actions) {
       Map<Attribute.AttributeName, Integer> attributes =
@@ -90,15 +106,19 @@ public class GameEngineTest {
       }
       //System.out.println(action);
       for (Attribute.AttributeName attributeName : attributes.keySet()) {
-        firstWorker.improveAttribute(attributeName.name(), attributes.get(attributeName));
+        worker.improveAttribute(attributeName.name(), attributes.get(attributeName));
       }
+      Choices choice = new Choices(action);
+      choice.setChoiceSelected(action);
+      worker.takeAction(choice);
+
     }
-    System.out.println(firstWorker);
+    System.out.println(worker);
   }
 
   @Test(dataProvider = "attributeNames")
   public void runForLowData(Attribute.AttributeName attributeToFilter) {
-    Worker firstWorker = new WorkerBuilder().build();
+    Worker worker = new WorkerBuilder().build();
     System.out.println("Low " + attributeToFilter.name() + " actions:");
     for (Action action : actions) {
       Map<Attribute.AttributeName, Integer> attributes =
@@ -108,9 +128,36 @@ public class GameEngineTest {
       }
       //System.out.println(action);
       for (Attribute.AttributeName attributeName : attributes.keySet()) {
-        firstWorker.improveAttribute(attributeName.name(), attributes.get(attributeName));
+        worker.improveAttribute(attributeName.name(), attributes.get(attributeName));
       }
+      Choices choice = new Choices(action);
+      choice.setChoiceSelected(action);
+      worker.takeAction(choice);
     }
-    System.out.println(firstWorker);
+    System.out.println(worker);
+  }
+
+  @Test
+  public void alwaysChooseFirstChoice() {
+    Worker worker = new WorkerBuilder().build();
+    for (Choices choice : choices) {
+      Action action = choice.getAction(0);
+      choice.setChoiceSelected(action);
+      worker.takeAction(choice);
+    }
+    System.out.println("Always taking the first choice:");
+    System.out.println(worker);
+  }
+
+  @Test
+  public void alwaysChooseSecondChoice() {
+    Worker worker = new WorkerBuilder().build();
+    for (Choices choice : choices) {
+      Action action = choice.getAction(1);
+      choice.setChoiceSelected(action);
+      worker.takeAction(choice);
+    }
+    System.out.println("Always taking the second choice:");
+    System.out.println(worker);
   }
 }

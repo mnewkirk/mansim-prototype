@@ -10,6 +10,7 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import attributes.Attribute;
+import workers.Worker;
 
 /**
  * @author Matt Newkirk 1/7/2016
